@@ -1,3 +1,4 @@
+import uuid
 import random
 import numpy as np
 from enum import Enum
@@ -99,15 +100,20 @@ class Appliances(Device):
 
 
 class Other(Device):
-    def __init__(self, device_id, device_type="other"):
+    def __init__(self, device_id, base_demand=20, frequency=168, device_type="other"):
         super().__init__(device_id, device_type)
-        self.init()
+        self.init(base_demand)
+        self.offset = (random.randint(0, 1), random.randint(2, 23))
+        self.frequency = frequency
 
-    def init(self):
-        self._demand = random.randint(20, 100)
+    def init(self, base_demand):
+        self._demand = base_demand + random.randint(20, 100)
 
-    def demand(self, _):
-        return self._demand
+    def demand(self, datetime: Schedule):
+        if datetime.weekday == self.offset[0] and datetime.hour == self.offset[1]:
+            return self._demand
+
+        return 0
 
     def mode(self):
         return DeviceMode.IMMEDIATE
@@ -119,4 +125,28 @@ class Other(Device):
         diff = min(self._demand, amount)
         self._demand -= diff
 
+        if self._demand == 0:
+            (weekday, hour) = self.offset
+            weekday = (weekday + self.frequency/24) % 7
+            hour = (hour + self.frequency % 24) % 24
+            self.offset = (weekday, hour)
+
         return diff
+
+
+def convert_to_device(config, name):
+    device_id = str(uuid.uuid4())[:8]
+    if name == 'solar_panels':
+        device = SolarPanels(device_id)
+    elif name == 'ev':
+        device = EV(device_id)
+    elif name == 'appliances':
+        device = Appliances(device_id)
+    else:
+        demand, frequency = 20, 24*7
+        if name in config:
+            demand = int(config[name]['average'])
+            frequency = int(config[name]['frequency'])
+        device = Other(device_id, demand, frequency, name)
+
+    return device
