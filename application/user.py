@@ -1,7 +1,7 @@
 from core.base import Schedule
 from core.device import Device
 from application.base import Trade
-from application.trading_platform import MarketInformation
+from application.base import MarketInformation
 
 
 class User:

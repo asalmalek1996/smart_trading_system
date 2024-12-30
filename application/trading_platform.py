@@ -3,18 +3,41 @@ from core.microgrids import Microgrids
 from core.base import Schedule
 from application.base import Trade
 from application.user import User
+from application.base import MarketInformation
+from core.external_power_grid import ExternalPowerGrid
 
 
-class MarketInformation:
-    def __init__(self):
-        self.supply = 0
-        self.demand = 0
-        self.external_price = 0
+class DSM:  # Demand side management
+    def __init__(self, external: ExternalPowerGrid):
+        self._market_information = {}
+        self.external = external
 
+    def market_information(self, datetime: Schedule):
+        if (datetime.weekday, datetime.hour) in self._market_information:
+            return self._market_information[(datetime.weekday, datetime.hour)]
 
-class DSM:  # TODO: Demand side management
-    def __init__(self):
-        print()
+        return self.predict_market(datetime)
+
+    def predict_market(self, datetime: Schedule):
+        predict = MarketInformation()
+        if datetime.has_pre():
+            # TODO: predict supply and demand
+            pre_datetime = datetime.copy().pre()
+            predict = self._market_information[(pre_datetime.weekday, pre_datetime.hour)]
+        predict.external_price = self.external.curr_price(datetime)
+
+        return predict
+
+    def record_market(self, datetime: Schedule, trade_list: list[Trade]):
+        data = MarketInformation()
+        data.external_price = self.external.curr_price(datetime)
+        if (datetime.weekday, datetime.hour) in self._market_information:
+            data = self._market_information[(datetime.weekday, datetime.hour)]
+
+        data.trade_list.extend(trade_list)
+        for trade in trade_list:
+            data.supply[trade.price] = data.supply.get(trade.price, 0) + trade.amount
+            data.demand[trade.price] = data.demand.get(trade.price, 0) + trade.amount
 
 
 class DMS:  # Distribution management systems
@@ -28,9 +51,9 @@ class DMS:  # Distribution management systems
 
 class TradingPlatform:
     def __init__(self, microgrids: Microgrids):
-        self.market_information = MarketInformation()
         self.microgrids = microgrids
-        self.dms = DMS(microgrids)
+        self.market_manager = DSM(self.microgrids.external)
+        self.allocator = DMS(microgrids)
         self.users = {}
 
     def register_user(self, user: User):
@@ -38,8 +61,8 @@ class TradingPlatform:
         for device in user.device_list:
             self.microgrids.register(device)
 
-    def next(self, datetime: Schedule):
-        self.predict_market(datetime)  # predicting supply and demand
+    def handle(self, datetime: Schedule):
+        self.market_manager.predict_market(datetime)  # predicting supply and demand
 
         round_number = 1
         while True:
@@ -51,21 +74,17 @@ class TradingPlatform:
                 break
 
             trade_list = self.match_trades(supply_list, demand_list)  # trade matching
-            self.dms.distribute_energy(trade_list, datetime)  # distribute by trade
+            self.allocator.distribute_energy(trade_list, datetime)  # distribute energy by trade
+
+            self.market_manager.record_market(datetime, trade_list)  # record trade
+
             if round_number > 5:
                 break
             round_number += 1
-        print()
-
-    def predict_market(self, datetime: Schedule):
-        self.market_information.external_price = self.microgrids.external.curr_price(datetime)
-        # TODO: predict supply and demand
-        self.market_information.supply = 0
-        self.market_information.demand = 0
 
     def notify_market(self, datetime: Schedule):
         for user in self.users.values():
-            user.update_market_information(datetime, self.market_information)
+            user.update_market_information(datetime, self.market_manager.market_information(datetime))
 
     def get_supply_list(self):
         result = []
