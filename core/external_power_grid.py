@@ -1,10 +1,10 @@
-from datetime import datetime
+from core.base import Schedule
 
 
 class ExternalPowerGrid:
     def __init__(self):
         # TODO:
-        self.prices = [
+        self._prices = [
             [0.1, 0.093, 0.089, 0.049, 0.047, 0.085, 0.116, 0.136, 0.153, 0.159, 0.141, 0.119, 0.109, 0.106,
              0.113, 0.124, 0.143, 0.15, 0.144, 0.141, 0.124, 0.116, 0.107, 0.096],
             [0.1, 0.093, 0.089, 0.049, 0.047, 0.085, 0.116, 0.136, 0.153, 0.159, 0.141, 0.119, 0.109, 0.106,
@@ -20,14 +20,13 @@ class ExternalPowerGrid:
             [0.1, 0.093, 0.089, 0.049, 0.047, 0.085, 0.116, 0.136, 0.153, 0.159, 0.141, 0.119, 0.109, 0.106,
              0.113, 0.124, 0.143, 0.15, 0.144, 0.141, 0.124, 0.116, 0.107, 0.096]
         ]
-        self.bill = {}
+        self._bill = {}
 
-    def curr_price(self) -> float:
-        now = datetime.now()
-        weekday = now.weekday()
-        hour = now.hour
-        return self.prices[weekday][hour]
+    def curr_price(self, datetime: Schedule) -> float:
+        weekday = datetime.weekday()
+        hour = datetime.hour
+        return self._prices[weekday][hour]
 
-    def allocate(self, target, demand):
-        self.bill[target] += demand*self.curr_price
+    def allocate(self, target, demand, datetime: Schedule):
+        self._bill[target] += demand*self.curr_price(datetime)
         return demand
