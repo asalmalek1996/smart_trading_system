@@ -100,6 +100,7 @@ class TradingPlatform:
 
     @staticmethod
     def match_trades(supply_list: list[Trade], demand_list: list[Trade]):
+        # TODO: matching algorithm
         supply_list = sorted(copy.deepcopy(supply_list), key=lambda x: x.price)
         demand_list = sorted(copy.deepcopy(demand_list), key=lambda x: x.price, reverse=True)
         trade_list = []
