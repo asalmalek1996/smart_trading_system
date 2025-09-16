@@ -78,31 +78,11 @@ smart_trading_system-main/
 
 ---
 
-## 📸 Screenshots / Diagram  
-*(Add your architecture diagram, trading results charts, or sample strategy screenshots here)*  
-
-Example placeholder:  
-
-![Trading Flow](docs/trading_diagram.png)  
-
----
-
 ## 🚧 Future Improvements  
 - Add **deep learning models** (LSTMs, Transformers) for better trend forecasting  
 - Multi-asset portfolio optimization  
 - Advanced risk management (Kelly criterion, dynamic position sizing)  
 - Deploy as a **web dashboard** with live updates  
-
----
-
-## 👨‍💻 Authors  
-- [Your Name Here]  
-- Contributors: Research Team  
-
----
-
-## 📜 License  
-This project is licensed under the **MIT License**.  
-
+ 
 ---
 💚 *“Smarter Trading through AI and Data”* 📈
