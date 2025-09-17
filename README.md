@@ -25,21 +25,17 @@ The system combines **machine learning models, technical indicators, and risk ma
 ✅ Backtesting support on historical data  
 
 ---
-
-## 📂 Repository Structure  
+## 📂 Repository Structure (Updated)
 ```
-smart_trading_system-main/
-│── data/               # Sample datasets & historical market data
-│── models/             # ML models and saved weights
-│── strategies/         # Trading strategies and rule-based logic
-│── backtesting/        # Backtesting and evaluation scripts
-│── utils/              # Helper functions (data loaders, preprocessors, etc.)
-│── notebooks/          # Jupyter notebooks for experiments
-│── main.py             # Entry point for running the system
-│── requirements.txt    # Python dependencies
-│── README.md
+.
+├─ application/      # Application layer (business logic, APIs, services)
+├─ core/             # Core trading logic, models, strategies
+├─ utils/            # Utility functions (helpers, configs, preprocessors)
+├─ main.py           # Entry point for running the trading system
+├─ .gitignore        # Ignored files and folders
+├─ LICENSE           # Project license (MIT)
+└─ README.md         # Project documentation
 ```
-
 ---
 
 ## ⚙️ Installation  
