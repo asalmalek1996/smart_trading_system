@@ -25,7 +25,7 @@ The system combines **machine learning models, technical indicators, and risk ma
 ✅ Backtesting support on historical data  
 
 ---
-## 📂 Repository Structure (Updated)
+## 📂 Repository Structure 
 ```
 .
 ├─ application/      # Application layer (business logic, APIs, services)
@@ -33,6 +33,7 @@ The system combines **machine learning models, technical indicators, and risk ma
 ├─ utils/            # Utility functions (helpers, configs, preprocessors)
 ├─ main.py           # Entry point for running the trading system
 ├─ .gitignore        # Ignored files and folders
+├─ requirements.txt  # Project dependencies
 ├─ LICENSE           # Project license (MIT)
 └─ README.md         # Project documentation
 ```
